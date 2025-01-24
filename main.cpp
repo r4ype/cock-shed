@@ -2,6 +2,27 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
+
+
+class Drink {
+public:
+  int price;
+  int stock;
+  int id;
+  
+};
+
+
+class Device {
+public:
+  int showSotck();
+  int transaction();
+}
+
+
+
+
+
 void lemonade() {
     std::cout << " [1] sharbat limo kharide shod" << std::endl;
 }
