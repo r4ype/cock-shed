@@ -2,24 +2,32 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 
 class Drink {
 public:
   int price;
   int count;
-  int id;
+  std::string id;
   
 };
 
 
 class Device {
 private:
-  Drink stock[4];
+  Drink* stock;
+  int stockCount = 4;
   
 public:
+  Device(int count) : stockCount(count){
+    stock = new Drink[stockCount];
+  }
+  ~Device() {
+    delete[] stock;
+  }
   void loadStock();
-  void recharge();
+  void recharge(std::string,int);
   void updateStock();
   void showSotck();
   void transaction();
@@ -32,8 +40,29 @@ std::ifstream inputFile("stockfile.dat");
 
     if (inputFile.is_open()) {
         std::string line;
-        while (std::getline(inputFile, line)) {
-            std::cout << line << std::endl;
+        int j = 0;
+        //should add if < stockCount
+        while (std::getline(inputFile, line) && j < stockCount) {
+          bool flag = true;
+          std::string temp = "";
+          int i = 0;
+          for (char x : line){
+              if ( x != '-'){
+                temp += x;
+              }
+              else{
+                if (i == 0)
+                  stock[j].id = temp;
+                else if (i == 1)
+                  stock[j].price = std::stoi(temp);
+                else if (i == 2)
+                  stock[j].count = std::stoi(temp);
+                temp = "";
+                i++;
+              
+              }
+          }
+          j++;
         }
         inputFile.close();
     } else {
@@ -41,9 +70,19 @@ std::ifstream inputFile("stockfile.dat");
     }
 
 }
-
+void Device::recharge(std::string name,int count){
+  for(int i = 0 ;i < stockCount;i++){
+    std::cout << stock[i].id << std::endl; 
+    if (stock[i].id == name){
+      stock[i].count += count;
+      std::cout << stock[i].id << " " << stock[i].count << std::endl ;
+      return;
+    }
+  }
+  std::cout << name << " not found !!" << std::endl;
+}
 void lemonade() {
- std::cout << "clicked"; 
+  std::cout << "clicked" << std::endl; 
 }
 
 int main() {
@@ -51,8 +90,11 @@ int main() {
     SDL_Window* window = SDL_CreateWindow("cock-shed", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 600, 0);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     
-    Device vendingMachine;
+    Device vendingMachine(4);
     vendingMachine.loadStock();
+    vendingMachine.recharge("coca",3);
+
+
     Drink cocacola;
     cocacola.price = 10;
     cocacola.count = 0;
