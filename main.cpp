@@ -10,29 +10,28 @@ public:
   int price;
   int count;
   std::string id;
-  
+
 };
 
 
 class Device {
 private:
   Drink* stock;
-  int stockCount = 4;
-  
+  int stockCount;
+
 public:
   Device(int count) : stockCount(count){
+    stockCount = count;
     stock = new Drink[stockCount];
   }
   ~Device() {
     delete[] stock;
   }
   void loadStock();
-  void recharge(std::string,int);
-  void updateStock();
+  void updateStock(std::string,int);
   void showSotck();
-  void transaction();
-  void updateTransaction();
-
+  int transaction(std::string,Drink *,int);
+  void savestock();
 };
 
 void Device::loadStock(){
@@ -59,7 +58,7 @@ std::ifstream inputFile("stockfile.dat");
                   stock[j].count = std::stoi(temp);
                 temp = "";
                 i++;
-              
+
               }
           }
           j++;
@@ -70,30 +69,90 @@ std::ifstream inputFile("stockfile.dat");
     }
 
 }
-void Device::recharge(std::string name,int count){
+
+void Device::updateStock(std::string name,int count){
   for(int i = 0 ;i < stockCount;i++){
-    std::cout << stock[i].id << std::endl; 
     if (stock[i].id == name){
       stock[i].count += count;
-      std::cout << stock[i].id << " " << stock[i].count << std::endl ;
       return;
     }
   }
   std::cout << name << " not found !!" << std::endl;
 }
-void lemonade() {
-  std::cout << "clicked" << std::endl; 
+
+void Device::showSotck(){
+  for(int i = 0;i < stockCount;i++){
+    std::cout << stock[i].id << " : price " << stock[i].price << " count " << stock[i].count << std::endl;
+  }
 }
+
+int Device::transaction(std::string name,Drink *ShopingCart,int count){
+  for (int i = 0; i < count; i++){
+    for(int j = 0;j < stockCount;j++){
+      if(stock[j].id == ShopingCart[i].id){
+        if(stock[j].count < ShopingCart[i].count){
+          std::cout << "can purches out of stock !!" << std::endl;
+          return 0;
+        }
+      }
+    }
+  }
+  int sum = 0;
+  std::fstream file;
+  file.open("transaction.dat", std::ios::app);
+  if (!file){
+    std::cout << "cant insert to  transaction file" << std::endl;
+  }
+  else{
+    for (int i = 0;i < count;i++){
+      for(int j = 0;j < stockCount;j++){
+        if(stock[j].id == ShopingCart[i].id){
+            stock[j].count -= ShopingCart[i].count ;
+            sum += ShopingCart[i].count * ShopingCart[i].price;
+            file << name +  "  " + ShopingCart[i].id + " " + std::to_string(ShopingCart[i].count) + '\n';
+        }
+      }
+    }
+  }
+  file.close();
+  return sum;
+
+}
+void Device::savestock(){
+  std::ofstream outFile("example.txt");
+  if (!outFile.is_open()){
+    std::cerr << "Error opening file !" << std::endl;
+    return;
+  }
+  else{
+    for (int i = 0;i < stockCount;i++){
+      outFile << stock[i].id + "-" + std::to_string(stock[i].price) + "-" + std::to_string(stock[i].count) + "-" << std::endl;
+    }
+    outFile.close();
+  }
+
+}
+
+void lemonade() {
+  std::cout << "clicked" << std::endl;
+}
+
 
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window* window = SDL_CreateWindow("cock-shed", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 600, 0);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    
-    Device vendingMachine(4);
+  
+    Drink ls[1];
+    ls[0].id = "coca";
+    ls[0].count = 3;
+    Device vendingMachine(3);
     vendingMachine.loadStock();
-    vendingMachine.recharge("coca",3);
-
+    vendingMachine.updateStock("coca", 3);
+    vendingMachine.updateStock("gogol", -4);
+    vendingMachine.transaction("ehsan",ls,1);
+    vendingMachine.showSotck();
+    
 
     Drink cocacola;
     cocacola.price = 10;
@@ -114,7 +173,7 @@ int main() {
 
     while(running) {
         while(SDL_PollEvent(&event)) {
-            if(event.type == SDL_QUIT) running = false;
+            if(event.type == SDL_QUIT ||  event.key.keysym.sym == SDLK_q) running = false;
             lemonadeB.handleEvent(&event);
         }
 
