@@ -20,6 +20,7 @@ class Device {
 private:
   Drink* stock;
   int stockCount;
+  
 
 public:
   Device(int count) : stockCount(count){
@@ -167,7 +168,7 @@ int main() {
     cocacola.id = 2;
 
     SDL_Color red = {0, 0, 0, 0};
-    Button lemonadeB(100, 100, 200, 50, red, renderer, "./assets/coca.png");
+    Button lemonadeB(100, 100, 200, 50, red);
     lemonadeB.onClick(lemonade);
 
     bool running = true;
