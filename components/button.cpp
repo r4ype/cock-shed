@@ -1,8 +1,9 @@
 #include "button.hpp"
 
-Button::Button(int x, int y, int w, int h, SDL_Color bgColor) {
+Button::Button(int x, int y, int w, int h, SDL_Color bgColor, SDL_Renderer* renderer, std::string image) {
     rect = {x, y, w, h};
     color = bgColor;
+    texture = TextureManager::loadTexture(image, renderer);
 }
 
 void Button::onClick(std::function<void()> callback) {
@@ -23,5 +24,6 @@ void Button::handleEvent(SDL_Event* e) {
 
 void Button::render(SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_RenderFillRect(renderer, &rect);
+     
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
 }

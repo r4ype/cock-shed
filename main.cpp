@@ -1,5 +1,7 @@
 #include "button.hpp"
+#include "texture_manager.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -140,7 +142,7 @@ void lemonade() {
 
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("cock-shed", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 600, 0);
+    SDL_Window* window = SDL_CreateWindow("cock-shed", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1042, 653, 0);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   
     Drink ls[1];
@@ -164,8 +166,8 @@ int main() {
     cocacola.count = 0;
     cocacola.id = 2;
 
-    SDL_Color red = {255, 0, 0, 255};
-    Button lemonadeB(100, 100, 200, 50, red);
+    SDL_Color red = {0, 0, 0, 0};
+    Button lemonadeB(100, 100, 200, 50, red, renderer, "./assets/coca.png");
     lemonadeB.onClick(lemonade);
 
     bool running = true;
@@ -180,9 +182,13 @@ int main() {
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
+        SDL_Texture* texture = TextureManager::loadTexture("./assets/bg.jpg", renderer);
+
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
         lemonadeB.render(renderer);
 
         SDL_RenderPresent(renderer);
+
     }
 
     SDL_DestroyRenderer(renderer);
