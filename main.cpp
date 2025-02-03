@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
+#include <SDL2/SDL_ttf.h>
 
 class Drink {
 public:
@@ -142,10 +142,20 @@ void lemonade() {
 
 
 int main() {
-    SDL_Init(SDL_INIT_VIDEO);
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
+        return 1;
+    }
+
+    // Initialize SDL_ttf
+    if (TTF_Init() == -1) {
+        std::cerr << "TTF could not initialize! TTF_Error: " << TTF_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
     SDL_Window* window = SDL_CreateWindow("cock-shed", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1042, 653, 0);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-  
+    char GameState = 'M' ;
     Drink ls[1];
     ls[0].id = "coca";
     ls[0].count = 3;
@@ -167,33 +177,78 @@ int main() {
     cocacola.count = 0;
     cocacola.id = 2;
 
-    SDL_Color red = {0, 0, 0, 0};
+    SDL_Color red = {255, 255, 255, 0};
     Button lemonadeB(100, 100, 200, 50, red);
     lemonadeB.onClick(lemonade);
 
     bool running = true;
     SDL_Event event;
 
+    TTF_Font* font = TTF_OpenFont("./assets/ARCADECLASSIC.TTF", 24);
+    if (!font) {
+        std::cerr << "Failed to load font! TTF_Error: " << TTF_GetError() << std::endl;
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+    SDL_Color textColor = {255, 255, 255, 255}; // White color
+    SDL_Surface* cocaSurface = TTF_RenderText_Solid(font, "COCO COLA", textColor);
+    SDL_Texture* cocaTexture = SDL_CreateTextureFromSurface(renderer, cocaSurface);
+    SDL_FreeSurface(cocaSurface);
+
+    SDL_Surface* fantaSurface = TTF_RenderText_Solid(font, "FANTA", textColor);
+    SDL_Texture* fantaTexture = SDL_CreateTextureFromSurface(renderer, fantaSurface);
+    SDL_FreeSurface(fantaSurface);
+
+    SDL_Surface* spriteSurface = TTF_RenderText_Solid(font, "SPRITE", textColor);
+    SDL_Texture* spriteTexture = SDL_CreateTextureFromSurface(renderer, spriteSurface);
+    SDL_FreeSurface(spriteSurface);
+
+    SDL_Surface* pepsiSurface = TTF_RenderText_Solid(font, "PEPSI", textColor);
+    SDL_Texture* pepsiTexture = SDL_CreateTextureFromSurface(renderer, pepsiSurface);
+    SDL_FreeSurface(pepsiSurface);
+
+
     while(running) {
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT ||  event.key.keysym.sym == SDLK_q) running = false;
             lemonadeB.handleEvent(&event);
         }
-
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderClear(renderer);
+        if (GameState == 'G'){
+            lemonadeB.render(renderer);
 
-        SDL_Texture* texture = TextureManager::loadTexture("./assets/bg.jpg", renderer);
+            SDL_Texture* texture = TextureManager::loadTexture("./assets/bg.jpg", renderer);
 
-        SDL_RenderCopy(renderer, texture, NULL, NULL);
-        lemonadeB.render(renderer);
+            SDL_RenderCopy(renderer, texture, NULL, NULL);
 
+        }
+        if (GameState == 'M'){
+            SDL_Rect cocaRect = {100, 100, 100, 50}; // Position and size of the text
+            SDL_RenderCopy(renderer, cocaTexture, nullptr, &cocaRect);
+            
+            SDL_Rect pepsiRect = {100, 200, 100, 50}; // Position and size of the text
+            SDL_RenderCopy(renderer, pepsiTexture, nullptr, &pepsiRect);
+
+            SDL_Rect fantaRect = {100, 300, 100, 50}; // Position and size of the text
+            SDL_RenderCopy(renderer, fantaTexture, nullptr, &fantaRect);
+
+            SDL_Rect spriteRect = {100, 400, 100, 50}; // Position and size of the text
+            SDL_RenderCopy(renderer, spriteTexture, nullptr, &spriteRect);
+        }
         SDL_RenderPresent(renderer);
 
     }
-
+    SDL_DestroyTexture(cocaTexture);
+    SDL_DestroyTexture(pepsiTexture);
+    SDL_DestroyTexture(fantaTexture);
+    SDL_DestroyTexture(spriteTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_CloseFont(font);
     SDL_Quit();
     return 0;
 }
