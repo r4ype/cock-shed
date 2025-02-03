@@ -85,7 +85,6 @@ void Device::updateStock(std::string name,int count){
 
 void Device::showSotck(){
   for(int i = 0;i < stockCount;i++){
-    std::cout << stock[i].id << " : price " << stock[i].price << " count " << stock[i].count << std::endl;
   }
 }
 
@@ -161,21 +160,8 @@ int main() {
     ls[0].count = 3;
     Device vendingMachine(3);
     vendingMachine.loadStock();
-    vendingMachine.updateStock("coca", 3);
-    vendingMachine.updateStock("gogol", -4);
-    vendingMachine.transaction("ehsan",ls,1);
     vendingMachine.showSotck();
     
-
-    Drink cocacola;
-    cocacola.price = 10;
-    cocacola.count = 0;
-    cocacola.id = 1;
-
-    Drink alis;
-    cocacola.price = 5;
-    cocacola.count = 0;
-    cocacola.id = 2;
 
     SDL_Color red = {255, 255, 255, 0};
     Button lemonadeB(100, 100, 200, 50, red);
