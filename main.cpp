@@ -24,7 +24,7 @@ class Device {
 
 
   public:
-    std::string username;
+    std::string username = "";
     Drink ShopingCart[4];
     Device(int count) : stockCount(count){
       stockCount = count;
@@ -59,7 +59,7 @@ void Device::loadShopingCart(){
 }
 void Device::renderDrinks(SDL_Renderer* renderer) {
   for (int i = 0; i < stockCount; i++) {
-    if (stock[i].count >= 0) {
+    if (stock[i].count > 0) {
       SDL_Rect rect = {100 + i * 100, 140, 110, 120};
       SDL_Texture* texture = TextureManager::loadTexture("./assets/" + stock[i].id + ".png", renderer);
       SDL_RenderCopy(renderer, texture, NULL, &rect);
@@ -159,37 +159,46 @@ void Device::savestock(){
 Device vendingMachine(4);
 
 void pepsi() {
-  vendingMachine.updateStock("pepsi", -1);
-  vendingMachine.updateShopingCart("pepsi", 1);
-
+  if (vendingMachine.username != ""){
+    vendingMachine.updateStock("pepsi", -1);
+    vendingMachine.updateShopingCart("pepsi", 1);
+  }
 }
 
 void sprite() {
-  vendingMachine.updateStock("sprite", -1);
-  vendingMachine.updateShopingCart("sprite", 1);
-
+  if (vendingMachine.username != ""){
+    vendingMachine.updateStock("sprite", -1);
+    vendingMachine.updateShopingCart("sprite", 1);
+  }
 }
 
 
 void coca() {
-  vendingMachine.updateStock("coca", -1);
-  vendingMachine.updateShopingCart("coca", 1);
-
+  if(vendingMachine.username != ""){
+    vendingMachine.updateStock("coca", -1);
+    vendingMachine.updateShopingCart("coca", 1);
+  }
 }
 
 
 void fanta() {
-  vendingMachine.updateStock("fanta", -1);
-  vendingMachine.updateShopingCart("fanta", 1);
+  if(vendingMachine.username != ""){
+    vendingMachine.updateStock("fanta", -1);
+    vendingMachine.updateShopingCart("fanta", 1);
+  }
 }
 
 void end() {
-  vendingMachine.savestock();
-  vendingMachine.transaction();
-  std::cin >> vendingMachine.username;
-  vendingMachine.loadShopingCart();
+  if(vendingMachine.username != ""){
+    vendingMachine.savestock();
+    vendingMachine.transaction();
+    vendingMachine.username = "";
+    vendingMachine.loadShopingCart();
+  }
 }
-
+void start(){
+  std::cin >> vendingMachine.username ;
+}
 // recharg page functions
 
 
@@ -238,7 +247,9 @@ int main() {
   Button endB(620, 230, 100, 50, black);
   endB.onClick(end);
 
-
+  SDL_Color white = {255, 255, 255, 255};
+  Button startB(620, 330, 100, 50, white);
+  startB.onClick(start);
 
   SDL_Color red = {255, 0, 0, 255};
   Button cocaB(860, 160, 100, 50, red);
@@ -308,7 +319,6 @@ int main() {
   SDL_Texture* texture = TextureManager::loadTexture("./assets/bg.jpg", renderer);
 
   Uint32 frameStart, frameTime;
-  std::cin >> vendingMachine.username;
   vendingMachine.loadShopingCart();
   while(running) {
     while(SDL_PollEvent(&event)) {
@@ -322,6 +332,7 @@ int main() {
       spriteB.handleEvent(&event);
       pepsiB.handleEvent(&event);
       endB.handleEvent(&event);
+      startB.handleEvent(&event);
 
       }
 
@@ -344,6 +355,7 @@ int main() {
       spriteB.render(renderer);
       pepsiB.render(renderer);
       endB.render(renderer);
+      startB.render(renderer);
       vendingMachine.renderDrinks(renderer);
 
     }
@@ -369,7 +381,7 @@ int main() {
     SDL_RenderPresent(renderer);
 
     frameTime = SDL_GetTicks() - frameStart;
-        if (frameTime < 32) SDL_Delay(32 - frameTime);  // Cap at ~60 FPS
+        if (frameTime < 32) SDL_Delay(32 - frameTime);  // Cap at ~30 FPS
   }
   SDL_DestroyTexture(cocaTexture);
   SDL_DestroyTexture(pepsiTexture);
