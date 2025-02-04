@@ -142,7 +142,7 @@ int Device::transaction(){
   return sum;
 }
 void Device::savestock(){
-  std::ofstream outFile("stockfile.txt");
+  std::ofstream outFile("stockfile.dat");
   if (!outFile.is_open()){
     std::cerr << "Error opening file !" << std::endl;
     return;
