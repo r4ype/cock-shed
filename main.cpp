@@ -60,7 +60,7 @@ void Device::loadShopingCart(){
 void Device::renderDrinks(SDL_Renderer* renderer) {
   for (int i = 0; i < stockCount; i++) {
     if (stock[i].count >= 0) {
-      SDL_Rect rect = {100 + i * 100, 100, 50, 100};
+      SDL_Rect rect = {100 + i * 100, 140, 110, 120};
       SDL_Texture* texture = TextureManager::loadTexture("./assets/" + stock[i].id + ".png", renderer);
       SDL_RenderCopy(renderer, texture, NULL, &rect);
       SDL_DestroyTexture(texture); // Clean up the texture
@@ -235,28 +235,27 @@ int main() {
   vendingMachine.showSotck();
 
   SDL_Color black = {0, 0, 0, 255};
-  Button endB(500, 500, 100, 50, black);
+  Button endB(620, 230, 100, 50, black);
   endB.onClick(end);
 
 
-  SDL_Color blue = {0, 0, 255, 255};
-  Button pepsiB(100, 500, 100, 50, blue);
-  pepsiB.onClick(pepsi);
-
-
-  SDL_Color green = {0, 255, 0, 255};
-  Button spriteB(200, 500, 100, 50, green);
-  spriteB.onClick(sprite);
-
 
   SDL_Color red = {255, 0, 0, 255};
-  Button cocaB(300, 500, 100, 50, red);
+  Button cocaB(860, 160, 100, 50, red);
   cocaB.onClick(coca);
 
+  SDL_Color green = {0, 255, 0, 255};
+  Button spriteB(860, 240, 100, 50, green);
+  spriteB.onClick(sprite);
 
   SDL_Color orange = {255, 165, 0, 255};
-  Button fantaB(400, 500, 100, 50, orange);
+  Button fantaB(860, 320, 100, 50, orange);
   fantaB.onClick(fanta);
+
+  SDL_Color blue = {0, 0, 255, 255};
+  Button pepsiB(860, 400, 100, 50, blue);
+  pepsiB.onClick(pepsi);
+
 
 
   // recharge page buttons
