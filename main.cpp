@@ -192,22 +192,22 @@ int main() {
   vendingMachine.showSotck();
 
   SDL_Color blue = {0, 0, 255, 255};
-  Button pepsiB(100, 500, 200, 50, blue);
+  Button pepsiB(100, 500, 100, 50, blue);
   pepsiB.onClick(pepsi);
 
 
   SDL_Color green = {0, 255, 0, 255};
-  Button spriteB(200, 500, 200, 50, green);
+  Button spriteB(200, 500, 100, 50, green);
   spriteB.onClick(sprite);
 
 
   SDL_Color red = {255, 0, 0, 255};
-  Button cocaB(300, 500, 200, 50, red);
+  Button cocaB(300, 500, 100, 50, red);
   cocaB.onClick(coca);
 
 
   SDL_Color orange = {255, 165, 0, 255};
-  Button fantaB(400, 500, 200, 50, orange);
+  Button fantaB(400, 500, 100, 50, orange);
   fantaB.onClick(fanta);
 
   bool running = true;
