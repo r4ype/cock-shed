@@ -38,29 +38,15 @@ class Device {
     void renderDrinks(SDL_Renderer* renderer);
 };
 
-void Device::renderDrinks(SDL_Renderer* renderer){
-  if (stock[0].count != 0){
-    SDL_Rect rect0 = {100,100 , 50,100};
-    SDL_Texture* textureall = TextureManager::loadTexture("./assets/" + stock[0].id + ".png", renderer);
-    SDL_RenderCopy(renderer,textureall,NULL, &rect0);
+void Device::renderDrinks(SDL_Renderer* renderer) {
+  for (int i = 0; i < stockCount; i++) {
+    if (stock[i].count != 0) {
+      SDL_Rect rect = {100 + i * 100, 100, 50, 100};
+      SDL_Texture* texture = TextureManager::loadTexture("./assets/" + stock[i].id + ".png", renderer);
+      SDL_RenderCopy(renderer, texture, NULL, &rect);
+      SDL_DestroyTexture(texture); // Clean up the texture
+    }
   }
-
-  if (stock[1].count != 0){
-    SDL_Rect rect0 = {200,100 , 50,100};
-    SDL_Texture* textureall = TextureManager::loadTexture("./assets/" + stock[1].id + ".png", renderer);
-    SDL_RenderCopy(renderer,textureall,NULL, &rect0);
-  }
-  if (stock[2].count != 0){
-    SDL_Rect rect0 = {300,100 , 50,100};
-    SDL_Texture* textureall = TextureManager::loadTexture("./assets/" + stock[2].id + ".png", renderer);
-    SDL_RenderCopy(renderer,textureall,NULL, &rect0);
-  }
-  if (stock[3].count != 0){
-    SDL_Rect rect0 = {400,100 , 50,100};
-    SDL_Texture* textureall = TextureManager::loadTexture("./assets/" + stock[3].id + ".png", renderer);
-    SDL_RenderCopy(renderer,textureall,NULL, &rect0);
-  } 
-  //inja moshek kod kasif darim : we porerly shoud use a for loop but idk how
 }
 
 void Device::loadStock(){
@@ -161,8 +147,11 @@ void Device::savestock(){
 
 }
 
-void lemonade() {
-  std::cout << "clicked" << std::endl;
+Device vendingMachine(4);
+
+void pepsi() {
+  vendingMachine.updateStock("pepsi", -1);
+  vendingMachine.showSotck();
 }
 
 
@@ -184,13 +173,12 @@ int main() {
   Drink ls[1];
   ls[0].id = "coca";
   ls[0].count = 4;
-  Device vendingMachine(4);
   vendingMachine.loadStock();
   vendingMachine.showSotck();
 
   SDL_Color red = {255, 0, 0, 255};
-  Button lemonadeB(100, 100, 200, 50, red);
-  lemonadeB.onClick(lemonade);
+  Button lemonadeB(100, 500, 200, 50, red);
+  lemonadeB.onClick(pepsi);
 
   bool running = true;
   SDL_Event event;
@@ -221,10 +209,11 @@ int main() {
   SDL_Texture* pepsiTexture = SDL_CreateTextureFromSurface(renderer, pepsiSurface);
   SDL_FreeSurface(pepsiSurface);
 
-  vendingMachine.renderDrinks(renderer);
 
 
   SDL_Texture* texture = TextureManager::loadTexture("./assets/bg.jpg", renderer);
+
+  Uint32 frameStart, frameTime;
   while(running) {
     while(SDL_PollEvent(&event)) {
       if(event.type == SDL_QUIT ||  event.key.keysym.sym == SDLK_q) running = false;
@@ -257,6 +246,8 @@ int main() {
     }
     SDL_RenderPresent(renderer);
 
+    frameTime = SDL_GetTicks() - frameStart;
+        if (frameTime < 32) SDL_Delay(32 - frameTime);  // Cap at ~60 FPS
   }
   SDL_DestroyTexture(cocaTexture);
   SDL_DestroyTexture(pepsiTexture);
