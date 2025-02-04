@@ -142,14 +142,14 @@ int Device::transaction(){
   return sum;
 }
 void Device::savestock(){
-  std::ofstream outFile("example.txt");
+  std::ofstream outFile("stockfile.txt");
   if (!outFile.is_open()){
     std::cerr << "Error opening file !" << std::endl;
     return;
   }
   else{
     for (int i = 0;i < stockCount;i++){
-      outFile << stock[i].id + "-" + std::to_string(stock[i].price) + "-" + std::to_string(stock[i].count) + "-" << std::endl;
+      outFile << stock[i].id + "-" + std::to_string(stock[i].price) + "-" + std::to_string(stock[i].count) + "-" + '\n';
     }
     outFile.close();
   }
