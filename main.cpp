@@ -152,8 +152,22 @@ Device vendingMachine(4);
 
 void pepsi() {
   vendingMachine.updateStock("pepsi", -1);
-  vendingMachine.showSotck();
 }
+
+void sprite() {
+  vendingMachine.updateStock("sprite", -1);
+}
+
+
+void coca() {
+  vendingMachine.updateStock("coca", -1);
+}
+
+
+void fanta() {
+  vendingMachine.updateStock("fanta", -1);
+}
+
 
 
 int main() {
@@ -177,9 +191,24 @@ int main() {
   vendingMachine.loadStock();
   vendingMachine.showSotck();
 
+  SDL_Color blue = {0, 0, 255, 255};
+  Button pepsiB(100, 500, 200, 50, blue);
+  pepsiB.onClick(pepsi);
+
+
+  SDL_Color green = {0, 255, 0, 255};
+  Button spriteB(200, 500, 200, 50, green);
+  spriteB.onClick(sprite);
+
+
   SDL_Color red = {255, 0, 0, 255};
-  Button lemonadeB(100, 500, 200, 50, red);
-  lemonadeB.onClick(pepsi);
+  Button cocaB(300, 500, 200, 50, red);
+  cocaB.onClick(coca);
+
+
+  SDL_Color orange = {255, 165, 0, 255};
+  Button fantaB(400, 500, 200, 50, orange);
+  fantaB.onClick(fanta);
 
   bool running = true;
   SDL_Event event;
@@ -218,7 +247,10 @@ int main() {
   while(running) {
     while(SDL_PollEvent(&event)) {
       if(event.type == SDL_QUIT ||  event.key.keysym.sym == SDLK_q) running = false;
-      lemonadeB.handleEvent(&event);
+      cocaB.handleEvent(&event);
+      fantaB.handleEvent(&event);
+      spriteB.handleEvent(&event);
+      pepsiB.handleEvent(&event);
     }
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
@@ -228,7 +260,10 @@ int main() {
 
 
       SDL_RenderCopy(renderer, texture, NULL, NULL);
-      lemonadeB.render(renderer);
+      cocaB.render(renderer);
+      fantaB.render(renderer);
+      spriteB.render(renderer);
+      pepsiB.render(renderer);
       vendingMachine.renderDrinks(renderer);
 
     }
