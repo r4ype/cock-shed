@@ -168,6 +168,28 @@ void fanta() {
   vendingMachine.updateStock("fanta", -1);
 }
 
+// recharg page functions
+
+
+void pepsiM() {
+  vendingMachine.updateStock("pepsi", 1);
+  vendingMachine.showSotck();
+}
+
+void spriteM() {
+  vendingMachine.updateStock("sprite", 1);
+}
+
+
+void cocaM() {
+  vendingMachine.updateStock("coca", 1);
+}
+
+
+void fantaM() {
+  vendingMachine.updateStock("fanta", 1);
+}
+
 
 
 int main() {
@@ -210,6 +232,23 @@ int main() {
   Button fantaB(400, 500, 100, 50, orange);
   fantaB.onClick(fanta);
 
+
+  // recharge page buttons
+ 
+  Button cocaBM(200, 100, 50, 50, green);
+  cocaBM.onClick(cocaM);
+
+  Button spriteBM(200, 200, 50, 50, green);
+  spriteBM.onClick(spriteM);
+
+
+  Button fantaBM(200, 300, 50, 50, green);
+  fantaBM.onClick(fantaM);
+
+
+  Button pepsiBM(200, 400, 50, 50, green);
+  pepsiBM.onClick(pepsiM);
+
   bool running = true;
   SDL_Event event;
 
@@ -247,10 +286,26 @@ int main() {
   while(running) {
     while(SDL_PollEvent(&event)) {
       if(event.type == SDL_QUIT ||  event.key.keysym.sym == SDLK_q) running = false;
+      if(event.key.keysym.sym == SDLK_g) GameState = 'G';
+      if(event.key.keysym.sym == SDLK_m) GameState = 'M';
+      if(GameState == 'G'){
+
       cocaB.handleEvent(&event);
       fantaB.handleEvent(&event);
       spriteB.handleEvent(&event);
       pepsiB.handleEvent(&event);
+
+      }
+
+      if(GameState == 'M'){
+
+      cocaBM.handleEvent(&event);
+      fantaBM.handleEvent(&event);
+      spriteBM.handleEvent(&event);
+      pepsiBM.handleEvent(&event);
+
+
+      }
     }
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
@@ -279,6 +334,12 @@ int main() {
 
       SDL_Rect spriteRect = {100, 400, 100, 50}; // Position and size of the text
       SDL_RenderCopy(renderer, spriteTexture, nullptr, &spriteRect);
+
+      cocaBM.render(renderer);
+      fantaBM.render(renderer);
+      spriteBM.render(renderer);
+      pepsiBM.render(renderer);
+ 
     }
     SDL_RenderPresent(renderer);
 
