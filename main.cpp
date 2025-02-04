@@ -40,7 +40,7 @@ class Device {
 
 void Device::renderDrinks(SDL_Renderer* renderer) {
   for (int i = 0; i < stockCount; i++) {
-    if (stock[i].count != 0) {
+    if (stock[i].count >= 0) {
       SDL_Rect rect = {100 + i * 100, 100, 50, 100};
       SDL_Texture* texture = TextureManager::loadTexture("./assets/" + stock[i].id + ".png", renderer);
       SDL_RenderCopy(renderer, texture, NULL, &rect);
@@ -87,7 +87,7 @@ void Device::loadStock(){
 
 void Device::updateStock(std::string name,int count){
   for(int i = 0 ;i < stockCount;i++){
-    if (stock[i].id == name){
+    if (stock[i].id == name && stock[i].count + count >= 0 ){
       stock[i].count += count;
       return;
     }
@@ -97,6 +97,7 @@ void Device::updateStock(std::string name,int count){
 
 void Device::showSotck(){
   for(int i = 0;i < stockCount;i++){
+    std::cout << stock[i].id << " : price " << stock[i].price << " count " << stock[i].count << std::endl;
   }
 }
 
