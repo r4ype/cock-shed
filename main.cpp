@@ -188,7 +188,7 @@ int main() {
   vendingMachine.loadStock();
   vendingMachine.showSotck();
 
-  SDL_Color red = {255, 0, 0, 1};
+  SDL_Color red = {255, 0, 0, 255};
   Button lemonadeB(100, 100, 200, 50, red);
   lemonadeB.onClick(lemonade);
 
@@ -224,6 +224,7 @@ int main() {
   vendingMachine.renderDrinks(renderer);
 
 
+  SDL_Texture* texture = TextureManager::loadTexture("./assets/bg.jpg", renderer);
   while(running) {
     while(SDL_PollEvent(&event)) {
       if(event.type == SDL_QUIT ||  event.key.keysym.sym == SDLK_q) running = false;
@@ -234,12 +235,11 @@ int main() {
     if (GameState == 'G'){
 
 
-      SDL_Texture* texture = TextureManager::loadTexture("./assets/bg.jpg", renderer);
 
+
+      SDL_RenderCopy(renderer, texture, NULL, NULL);
       lemonadeB.render(renderer);
-
-        SDL_RenderCopy(renderer, texture, NULL, NULL);
-        vendingMachine.renderDrinks(renderer);
+      vendingMachine.renderDrinks(renderer);
 
     }
     if (GameState == 'M'){
