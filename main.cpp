@@ -235,18 +235,18 @@ int main() {
 
   // recharge page buttons
  
-  Button cocaBM(200, 100, 50, 50, green);
+  Button cocaBM(300, 100, 50, 50, green);
   cocaBM.onClick(cocaM);
 
-  Button spriteBM(200, 200, 50, 50, green);
+  Button spriteBM(300, 400, 50, 50, green);
   spriteBM.onClick(spriteM);
 
 
-  Button fantaBM(200, 300, 50, 50, green);
+  Button fantaBM(300, 300, 50, 50, green);
   fantaBM.onClick(fantaM);
 
 
-  Button pepsiBM(200, 400, 50, 50, green);
+  Button pepsiBM(300, 200, 50, 50, green);
   pepsiBM.onClick(pepsiM);
 
   bool running = true;
