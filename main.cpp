@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <SDL2/SDL_ttf.h>
+#include <ctime>
 
 class Drink {
   public:
@@ -23,6 +24,8 @@ class Device {
 
 
   public:
+    std::string username;
+    Drink ShopingCart[4];
     Device(int count) : stockCount(count){
       stockCount = count;
       stock = new Drink[stockCount];
@@ -33,11 +36,27 @@ class Device {
     void loadStock();
     void updateStock(std::string,int);
     void showSotck();
-    int transaction(std::string,Drink *,int);
+    int transaction();
     void savestock();
     void renderDrinks(SDL_Renderer* renderer);
+    void loadShopingCart();
+    void updateShopingCart(std::string,int);
 };
 
+void Device::updateShopingCart(std::string drinkName,int k){
+  for (int i = 0;i < 4;i++){
+    if(ShopingCart[i].id == drinkName){
+      ShopingCart[i].count += k;
+    }
+  }
+}
+
+void Device::loadShopingCart(){
+  for (int i = 0;i < 4;i++){
+    ShopingCart[i] = stock[i];
+    ShopingCart[i].count = 0;
+  }
+}
 void Device::renderDrinks(SDL_Renderer* renderer) {
   for (int i = 0; i < stockCount; i++) {
     if (stock[i].count >= 0) {
@@ -101,17 +120,7 @@ void Device::showSotck(){
   }
 }
 
-int Device::transaction(std::string name,Drink *ShopingCart,int count){
-  for (int i = 0; i < count; i++){
-    for(int j = 0;j < stockCount;j++){
-      if(stock[j].id == ShopingCart[i].id){
-        if(stock[j].count < ShopingCart[i].count){
-          std::cout << "can purches out of stock !!" << std::endl;
-          return 0;
-        }
-      }
-    }
-  }
+int Device::transaction(){
   int sum = 0;
   std::fstream file;
   file.open("transaction.dat", std::ios::app);
@@ -119,19 +128,18 @@ int Device::transaction(std::string name,Drink *ShopingCart,int count){
     std::cout << "cant insert to  transaction file" << std::endl;
   }
   else{
-    for (int i = 0;i < count;i++){
-      for(int j = 0;j < stockCount;j++){
-        if(stock[j].id == ShopingCart[i].id){
-          stock[j].count -= ShopingCart[i].count ;
-          sum += ShopingCart[i].count * ShopingCart[i].price;
-          file << name +  "  " + ShopingCart[i].id + " " + std::to_string(ShopingCart[i].count) + '\n';
-        }
+    std::time_t timestamp;
+    std::time(&timestamp);
+    for (int i = 0;i < 4;i++){
+      std::cout << ShopingCart[i].id << " " << ShopingCart[i].count << std::endl;
+      if(ShopingCart[i].count > 0){
+        sum += ShopingCart[i].count * ShopingCart[i].price;
+        file << username +  "  " + ShopingCart[i].id + " " + std::to_string(ShopingCart[i].count) + " " + std::ctime(&timestamp) +'\n';
       }
     }
   }
   file.close();
   return sum;
-
 }
 void Device::savestock(){
   std::ofstream outFile("example.txt");
@@ -152,20 +160,34 @@ Device vendingMachine(4);
 
 void pepsi() {
   vendingMachine.updateStock("pepsi", -1);
+  vendingMachine.updateShopingCart("pepsi", 1);
+
 }
 
 void sprite() {
   vendingMachine.updateStock("sprite", -1);
+  vendingMachine.updateShopingCart("sprite", 1);
+
 }
 
 
 void coca() {
   vendingMachine.updateStock("coca", -1);
+  vendingMachine.updateShopingCart("coca", 1);
+
 }
 
 
 void fanta() {
   vendingMachine.updateStock("fanta", -1);
+  vendingMachine.updateShopingCart("fanta", 1);
+}
+
+void end() {
+  vendingMachine.savestock();
+  vendingMachine.transaction();
+  std::cin >> vendingMachine.username;
+  vendingMachine.loadShopingCart();
 }
 
 // recharg page functions
@@ -191,7 +213,6 @@ void fantaM() {
 }
 
 
-
 int main() {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
@@ -212,6 +233,11 @@ int main() {
   ls[0].count = 4;
   vendingMachine.loadStock();
   vendingMachine.showSotck();
+
+  SDL_Color black = {0, 0, 0, 255};
+  Button endB(500, 500, 100, 50, black);
+  endB.onClick(end);
+
 
   SDL_Color blue = {0, 0, 255, 255};
   Button pepsiB(100, 500, 100, 50, blue);
@@ -283,6 +309,8 @@ int main() {
   SDL_Texture* texture = TextureManager::loadTexture("./assets/bg.jpg", renderer);
 
   Uint32 frameStart, frameTime;
+  std::cin >> vendingMachine.username;
+  vendingMachine.loadShopingCart();
   while(running) {
     while(SDL_PollEvent(&event)) {
       if(event.type == SDL_QUIT ||  event.key.keysym.sym == SDLK_q) running = false;
@@ -294,6 +322,7 @@ int main() {
       fantaB.handleEvent(&event);
       spriteB.handleEvent(&event);
       pepsiB.handleEvent(&event);
+      endB.handleEvent(&event);
 
       }
 
@@ -310,15 +339,12 @@ int main() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
     if (GameState == 'G'){
-
-
-
-
       SDL_RenderCopy(renderer, texture, NULL, NULL);
       cocaB.render(renderer);
       fantaB.render(renderer);
       spriteB.render(renderer);
       pepsiB.render(renderer);
+      endB.render(renderer);
       vendingMachine.renderDrinks(renderer);
 
     }
